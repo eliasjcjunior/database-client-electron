@@ -21,7 +21,12 @@
   },
   "scripts": {
     "dev": "node build/nextron.js",
-    "build": "node build/nextron.js build"
+    "build": "node build/nextron.js build",
+    "build:all": "node build/nextron.js build --all",
+    "build:win32": "node build/nextron.js build --win --ia32",
+    "build:win64": "node build/nextron.js build --win --x64",
+    "build:mac": "node build/nextron.js build --mac --x64",
+    "build:linux": "node build/nextron.js build --linux"
   },
   "dependencies": {
     "@zeit/next-css": "^1.0.1",
