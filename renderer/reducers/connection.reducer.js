@@ -11,6 +11,8 @@ const reducer = (state = initialReducer, action) => {
             return {...state , data: action.data};
         case actionsType.CONNECTION_SUCCESS:
             return {...state , data: action.data};
+        case actionsType.CONNECTION_FAIL:
+            return {...state , data: action.data};
         default:
             return state
     }
