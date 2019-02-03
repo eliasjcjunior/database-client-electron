@@ -14,7 +14,7 @@ if (typeof require !== 'undefined') {
 
 module.exports = withLess({
   webpack: config => Object.assign(config, {
-    target: 'electron-renderer',
+    target: 'electron-renderer'
   }),
   exportPathMap: async function () {
     return {
