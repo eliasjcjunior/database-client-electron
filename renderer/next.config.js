@@ -1,11 +1,16 @@
-module.exports = {
+if (typeof require !== 'undefined') {
+  require.extensions['.css'] = (file) => {}
+}
+
+const withCss = require('@zeit/next-css')
+
+module.exports = withCss({
   webpack: config => Object.assign(config, {
     target: 'electron-renderer'
   }),
   exportPathMap: async function () {
     return {
-      '/home': { page: '/home' },
-      '/next': { page: '/next' }
+      '/home': { page: '/home' }
     }
   }
-}
+})

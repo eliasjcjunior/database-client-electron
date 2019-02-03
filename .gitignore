@@ -59,3 +59,7 @@ typings/
 
 # next.js build output
 .next
+
+# files dev to running app
+app/
+
