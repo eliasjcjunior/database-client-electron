@@ -60,6 +60,12 @@ typings/
 # next.js build output
 .next
 
+# nextron dev output
+app/
+
+# OS X related
+.DS_STORE
+
 # electron dist binaries
 dist/
 
