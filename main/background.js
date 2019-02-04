@@ -1,6 +1,6 @@
-import { join } from 'path'
-import { app } from 'electron'
-import { createWindow, enableHotReload } from './helpers'
+import {join} from 'path'
+import {app, BrowserWindow} from 'electron'
+import {createWindow, enableHotReload} from './helpers'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -12,10 +12,12 @@ if (!isProd) {
 }
 
 app.on('ready', () => {
-  const mainWindow = createWindow('main', {
-    width: 1000,
-    height: 600
-  })
+  const mainWindow = new BrowserWindow({
+    width: 550,
+    height: 350,
+    resizable: false,
+    maximizable: false
+  });
 
   if (isProd) {
     const homeFile = join(app.getAppPath(), 'app/home/index.html')
