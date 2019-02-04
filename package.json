@@ -9,6 +9,10 @@
     "appId": "com.example.nextron",
     "productName": "ClientNoSQL",
     "copyright": "Copyright © 2018",
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "darkModeSupport": true
+    },
     "directories": {
       "output": "dist",
       "buildResources": "resources"
