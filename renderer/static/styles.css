@@ -1,0 +1,11 @@
+body {
+    overflow-y: hidden
+}
+
+.change_color {
+    background-color: #e6f7ff;
+}
+
+tr {
+    font-size: 12px;
+}

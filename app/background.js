@@ -115,10 +115,12 @@ if (!isProd) {
 }
 
 electron__WEBPACK_IMPORTED_MODULE_1__["app"].on('ready', () => {
-  const mainWindow = Object(_helpers__WEBPACK_IMPORTED_MODULE_2__["createWindow"])('main', {
-    width: 1000,
-    height: 600
-  })
+  const mainWindow = new electron__WEBPACK_IMPORTED_MODULE_1__["BrowserWindow"]({
+    width: 550,
+    height: 350,
+    resizable: false,
+    maximizable: false
+  });
 
   if (isProd) {
     const homeFile = Object(path__WEBPACK_IMPORTED_MODULE_0__["join"])(electron__WEBPACK_IMPORTED_MODULE_1__["app"].getAppPath(), 'app/home/index.html')
