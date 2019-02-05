@@ -13,8 +13,8 @@ if (!isProd) {
 
 app.on('ready', () => {
   const mainWindow = new BrowserWindow({
-    width: 550,
-    height: 350,
+    width: 1000,
+    height: 800,
     resizable: false,
     maximizable: false
   });

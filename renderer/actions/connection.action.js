@@ -1,6 +1,6 @@
-import { Connection } from '../mongo/connection';
+import { Connection } from '../services/mongo/connection';
 
-export const actionsType = {
+export const connectionActionTypes = {
     NEW_CONNECTION: 'NEW_CONNECTION',
     CONNECTION_SUCCESS: 'CONNECTION_SUCCESS',
     CONNECTION_FAIL: 'CONNECTION_FAIL',
@@ -11,11 +11,11 @@ export const startConnection = (connectionOptions) => {
     const connec = new Connection(connectionOptions);
 
     return dispatch => {
-        dispatch({ type: actionsType.NEW_CONNECTION , data: { log: 'Connection Started'}});
+        dispatch({ type: connectionActionTypes.NEW_CONNECTION , data: { log: 'Connection Started'}});
         return connec.getConnection().then(database => {
-            dispatch({ type: actionsType.CONNECTION_SUCCESS , data: { log: 'Connection Finished', database }});
+            dispatch({ type: connectionActionTypes.CONNECTION_SUCCESS , data: { log: 'Connection Finished', database }});
         }).catch(error => {
-            dispatch({ type: actionsType.CONNECTION_FAIL , data: { log: 'Connection Failed'}});
+            dispatch({ type: connectionActionTypes.CONNECTION_FAIL , data: { log: 'Connection Failed'}});
         });
       };
   }

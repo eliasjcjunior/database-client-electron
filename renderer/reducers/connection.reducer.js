@@ -1,17 +1,16 @@
-import { actionsType } from '../actions';
+import { connectionActionTypes } from '../actions';
 
 const initialReducer = {
-    status: false,
     data: {}
 }
 
 const reducer = (state = initialReducer, action) => {
     switch (action.type) {
-        case actionsType.NEW_CONNECTION:
+        case connectionActionTypes.NEW_CONNECTION:
             return {...state , data: action.data};
-        case actionsType.CONNECTION_SUCCESS:
+        case connectionActionTypes.CONNECTION_SUCCESS:
             return {...state , data: action.data};
-        case actionsType.CONNECTION_FAIL:
+        case connectionActionTypes.CONNECTION_FAIL:
             return {...state , data: action.data};
         default:
             return state

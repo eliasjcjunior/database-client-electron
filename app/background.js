@@ -116,8 +116,8 @@ if (!isProd) {
 
 electron__WEBPACK_IMPORTED_MODULE_1__["app"].on('ready', () => {
   const mainWindow = new electron__WEBPACK_IMPORTED_MODULE_1__["BrowserWindow"]({
-    width: 550,
-    height: 350,
+    width: 1000,
+    height: 800,
     resizable: false,
     maximizable: false
   });
