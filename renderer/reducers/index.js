@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
-import connectionReducer from './connection.reducer';
-import electronLocalReducer from './electron-local.reducer';
+import mongoConnectionReducer from './mongo-connection.reducer';
+import connectionManagerReducer from './connection-manager.reducer';
 
 export default combineReducers({
-    connectionReducer,
-    electronLocalReducer
+    mongoConnectionReducer,
+    connectionManagerReducer
 });

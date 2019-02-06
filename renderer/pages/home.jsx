@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import { saveDataAction, getAllDataAction } from '../actions';
-import {  Button, Table, Icon } from 'antd';
+import { saveDataAction, getAllDataAction, removeDataAction, selectConnectionAction } from '../actions';
+import {  Button, Table, Icon, Menu, Dropdown } from 'antd';
 import { remote } from 'electron';
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -22,16 +22,16 @@ class Page extends Component {
 
   state = {
     connections: [],
-    selectedRow: null,
     connection: null
   }
 
   constructor(props) {
     super(props);
     this.openScreenAddConnection = this.openScreenAddConnection.bind(this);
-    this.selectRow = this.selectRow.bind(this);
+    this.selectConnectionByMenu = this.selectConnectionByMenu.bind(this);
     this.saveConnection = this.saveConnection.bind(this);
     this.handleConnections = this.handleConnections.bind(this);
+    this.removeConnection = this.removeConnection.bind(this);
     this.props.getAllDataAction();
   }
 
@@ -68,7 +68,9 @@ class Page extends Component {
   }
 
   removeConnection() {
-
+    const { removeDataAction, connection, getAllDataAction } = this.props;
+    removeDataAction(connection._id);
+    getAllDataAction();
   }
 
   saveConnection() {
@@ -77,25 +79,21 @@ class Page extends Component {
   }
 
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.someValue !== prevState.someValue) {
+  static getDerivedStateFromProps(nextProps) {
       return {
         connections: nextProps.connections,
         connection: nextProps.connection
       };
-    }
-    else return null;
   }
 
-  selectRow(selectRow, index) {
-    const dataSource = this.state.dataSource.map(item => { 
-      return {
-        ...item,
-        selected: false
-      }
-     });
-    dataSource[index].selected = true;
-    this.setState({ selectRow, dataSource }); 
+  selectConnectionByMenu(connection) {
+    this.props.selectConnectionAction(connection);
+  }
+
+  selectMenuItem(key){
+    if (key === 'remove') {
+      this.removeConnection();
+    }
   }
   
 
@@ -109,52 +107,84 @@ class Page extends Component {
     return connections.map(item => {
       return {
         ...item,
-        key: item['_id']
+        key: item['_id'],
+        ssl: 'N/A'
       }
     });
   }
 
   render() {
+
+    const { connections } = this.props;
+
+    const menu = (
+      <Menu onClick={({ key }) => {this.selectMenuItem(key)}}>
+        <Menu.Item key="edit">
+          <a>Edit</a>
+        </Menu.Item>
+        <Menu.Item key="remove">
+          <a>Remove</a>
+        </Menu.Item>
+      </Menu>
+    );
     
     const columns = [{
       title: 'Connection Name',
       dataIndex: 'connectionName',
       key: 'connectionName',
+      width: '25%',
+      render: (text, record) => (
+        <span>
+          <Icon style={{fontSize: '13px'}} type="bulb" theme="twoTone" twoToneColor="red" />
+          <Icon type="poweroff" theme="twoTone" twoToneColor="blue" />
+          <span style={{fontWeight: 'bold'}}>{text}</span>
+        </span>
+      )
+    }, {
+      title: 'Host',
+      dataIndex: 'host',
+      key: 'host',
+      width: '15%',
+    }, {
+      title: 'Username',
+      dataIndex: 'username',
+      key: 'username',
+      width: '15%',
     }, {
       title: 'Database',
       dataIndex: 'database',
       key: 'database',
+      width: '100px',
     }, {
-      title: 'Last Connection',
-      dataIndex: 'lastConnection',
-      key: 'lastConnection',
+      title: 'SSL',
+      dataIndex: 'ssl',
+      key: 'ssl',
+      width: '10%',
+    }, {
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions',
+      width: '25%',
+      render: (text, record) => (
+        <span>
+          <Button style={{width: '60px', marginRight: '10px'}}>Test</Button>
+          <Dropdown onClick={() => {this.selectConnectionByMenu(record)}} overlay={menu} trigger={['click']} placement="bottomCenter">
+            <Button style={{width: '60px'}}>
+              <Icon type="setting" />
+            </Button>
+          </Dropdown>
+        </span>
+      ),
     }];
-
-    const { connections } = this.props;
-    
 
     return (
       <div style={{ margin: 10, marginTop: 20}}>
         <div style={{ marginBottom: 20}}>
-          <Button onClick={() => this.saveConnection()} style={{backgroundColor: 'green'}}>
-            <Icon style={{ fontSize: 20, color: 'white' }} type="plus" />
-          </Button>
-          <Button style={{backgroundColor: '#FFBD33', marginLeft: 10}}>
-            <Icon style={{ fontSize: 20, color: 'white' }} type="edit" />
-          </Button>
-          <Button style={{backgroundColor: 'red', marginLeft: 10}}>
-           <Icon style={{ fontSize: 20, color: 'white'}} type="close" />
+          <Button onClick={() => this.saveConnection()} style={{backgroundColor: 'green', width: '150px', color: 'white'}}>
+            Create Connection
           </Button>
         </div>
-        <Table rowClassName={ (record) => {
-          return record.selected ? 'change_color' : 'row'
-        } } onRow={(record, index) => {
-          return {
-            onClick: () => {
-              this.selectRow(record, index);
-            }
-          }
-        }} bordered pagination={false} dataSource={this.handleConnections(connections)} columns={columns} size="middle"/>
+        <Table scroll={{y: 300}} pagination={false} dataSource={this.handleConnections(connections)} columns={columns} size="middle"/>
       </div>
     )
   }
@@ -162,9 +192,9 @@ class Page extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    connections: state.electronLocalReducer.connections,
-    connection: state.electronLocalReducer.connection
+    connections: state.connectionManagerReducer.connections,
+    connection: state.connectionManagerReducer.connection
   };
 };
 
-export default connect(mapStateToProps, { saveDataAction, getAllDataAction })(Page);
+export default connect(mapStateToProps, { saveDataAction, getAllDataAction, removeDataAction, selectConnectionAction })(Page);
