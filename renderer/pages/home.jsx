@@ -1,29 +1,38 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import { startConnection } from '../actions';
-import { Input, Button, List, Table, Icon } from 'antd';
+import { saveDataAction, getAllDataAction, removeDataAction, selectConnectionAction } from '../actions';
+import {  Button, Table, Icon, Menu, Dropdown } from 'antd';
 import { remote } from 'electron';
 
 const isProd = process.env.NODE_ENV === 'production';
 
 let newWindow = null;
 
+const connectionObj = {
+  username: 'eliasjcjunior',
+  password: '123',
+  host: 'ggg.com.br',
+  port: '222',
+  database: 'db_mongo',
+  connectUri: '',
+  connectionName: 'AWSMongo'
+}
+
 class Page extends Component {
 
   state = {
-    dataSource: [],
-    selectedRow: null
+    connections: [],
+    connection: null
   }
 
   constructor(props) {
     super(props);
     this.openScreenAddConnection = this.openScreenAddConnection.bind(this);
-    this.listConnections = this.listConnections.bind(this);
-    this.selectRow = this.selectRow.bind(this);
-  }
-
-  componentWillMount() {
-    this.listConnections();
+    this.selectConnectionByMenu = this.selectConnectionByMenu.bind(this);
+    this.saveConnection = this.saveConnection.bind(this);
+    this.handleConnections = this.handleConnections.bind(this);
+    this.removeConnection = this.removeConnection.bind(this);
+    this.props.getAllDataAction();
   }
 
   openScreenAddConnection () {
@@ -59,37 +68,34 @@ class Page extends Component {
   }
 
   removeConnection() {
-
+    const { removeDataAction, connection, getAllDataAction } = this.props;
+    removeDataAction(connection._id);
+    getAllDataAction();
   }
 
-  selectRow(selectRow, index) {
-    const dataSource = this.state.dataSource.map(item => { 
+  saveConnection() {
+    this.props.saveDataAction(connectionObj);
+    this.props.getAllDataAction();
+  }
+
+
+  static getDerivedStateFromProps(nextProps) {
       return {
-        ...item,
-        selected: false
-      }
-     });
-    dataSource[index].selected = true;
-    this.setState({ selectRow, dataSource }); 
+        connections: nextProps.connections,
+        connection: nextProps.connection
+      };
+  }
+
+  selectConnectionByMenu(connection) {
+    this.props.selectConnectionAction(connection);
+  }
+
+  selectMenuItem(key){
+    if (key === 'remove') {
+      this.removeConnection();
+    }
   }
   
-  listConnections() {
-    this.setState({
-      dataSource: [{
-        key: '1',
-        connectionName: 'AWSMongoDB',
-        database: 'mongo_db_production',
-        lastConnection: '02-04-2019 - 16:37',
-        selected: false
-      }, {
-        key: '2',
-        connectionName: 'AzureMongoDB',
-        database: 'mongo_db_stg',
-        lastConnection: '01-15-2019 - 09:12',
-        selected: false
-      }]
-    })
-  }
 
   handleInput(evt) {
     const changes = {};
@@ -97,46 +103,88 @@ class Page extends Component {
     this.setState(changes);
   }
 
+  handleConnections(connections) {
+    return connections.map(item => {
+      return {
+        ...item,
+        key: item['_id'],
+        ssl: 'N/A'
+      }
+    });
+  }
+
   render() {
+
+    const { connections } = this.props;
+
+    const menu = (
+      <Menu onClick={({ key }) => {this.selectMenuItem(key)}}>
+        <Menu.Item key="edit">
+          <a>Edit</a>
+        </Menu.Item>
+        <Menu.Item key="remove">
+          <a>Remove</a>
+        </Menu.Item>
+      </Menu>
+    );
     
     const columns = [{
       title: 'Connection Name',
       dataIndex: 'connectionName',
       key: 'connectionName',
+      width: '25%',
+      render: (text, record) => (
+        <span>
+          <Icon style={{fontSize: '13px'}} type="bulb" theme="twoTone" twoToneColor="red" />
+          <Icon type="poweroff" theme="twoTone" twoToneColor="blue" />
+          <span style={{fontWeight: 'bold'}}>{text}</span>
+        </span>
+      )
+    }, {
+      title: 'Host',
+      dataIndex: 'host',
+      key: 'host',
+      width: '15%',
+    }, {
+      title: 'Username',
+      dataIndex: 'username',
+      key: 'username',
+      width: '15%',
     }, {
       title: 'Database',
       dataIndex: 'database',
       key: 'database',
+      width: '100px',
     }, {
-      title: 'Last Connection',
-      dataIndex: 'lastConnection',
-      key: 'lastConnection',
+      title: 'SSL',
+      dataIndex: 'ssl',
+      key: 'ssl',
+      width: '10%',
+    }, {
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions',
+      width: '25%',
+      render: (text, record) => (
+        <span>
+          <Button style={{width: '60px', marginRight: '10px'}}>Test</Button>
+          <Dropdown onClick={() => {this.selectConnectionByMenu(record)}} overlay={menu} trigger={['click']} placement="bottomCenter">
+            <Button style={{width: '60px'}}>
+              <Icon type="setting" />
+            </Button>
+          </Dropdown>
+        </span>
+      ),
     }];
-
-    const { dataSource } = this.state;
 
     return (
       <div style={{ margin: 10, marginTop: 20}}>
         <div style={{ marginBottom: 20}}>
-          <Button onClick={() => this.openScreenAddConnection()} style={{backgroundColor: 'green'}}>
-            <Icon style={{ fontSize: 20, color: 'white' }} type="plus" />
-          </Button>
-          <Button style={{backgroundColor: '#FFBD33', marginLeft: 10}}>
-            <Icon style={{ fontSize: 20, color: 'white' }} type="edit" />
-          </Button>
-          <Button style={{backgroundColor: 'red', marginLeft: 10}}>
-           <Icon style={{ fontSize: 20, color: 'white'}} type="close" />
+          <Button onClick={() => this.saveConnection()} style={{backgroundColor: 'green', width: '150px', color: 'white'}}>
+            Create Connection
           </Button>
         </div>
-        <Table rowClassName={ (record) => {
-          return record.selected ? 'change_color' : 'row'
-        } } onRow={(record, index) => {
-          return {
-            onClick: () => {
-              this.selectRow(record, index);
-            }
-          }
-        }} bordered pagination={false} dataSource={dataSource} columns={columns} size="middle"/>
+        <Table scroll={{y: 300}} pagination={false} dataSource={this.handleConnections(connections)} columns={columns} size="middle"/>
       </div>
     )
   }
@@ -144,8 +192,9 @@ class Page extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    log: state.connectionReducer.data.log
+    connections: state.connectionManagerReducer.connections,
+    connection: state.connectionManagerReducer.connection
   };
 };
 
-export default connect(mapStateToProps, { startConnection })(Page);
+export default connect(mapStateToProps, { saveDataAction, getAllDataAction, removeDataAction, selectConnectionAction })(Page);

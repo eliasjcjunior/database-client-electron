@@ -1,5 +1,4 @@
 import Document, { Head, Main, NextScript } from 'next/document'
-import '../static/styles.less';
 export default class MyDocument extends Document {
   render () {
     return (

@@ -1,1 +1,2 @@
-export * from './connection.action';
+export * from './mongo-connection.action';
+export * from './connection-manager.action';
