@@ -1,4 +1,5 @@
 import db from '../services/database';
+import { ipcRenderer } from 'electron';
 
 export const connectionManagerActionTypes = {
     SAVE_CONNECTION_MANAGER_START: 'SAVE_CONNECTION_MANAGER_START',
@@ -9,15 +10,7 @@ export const connectionManagerActionTypes = {
     GET_ALL_CONNECTION_MANAGER_FAIL: 'GET_ALL_CONNECTION_MANAGER_FAIL',
     REMOVE_CONNECTION_MANAGER_START: 'REMOVE_CONNECTION_MANAGER_START',
     REMOVE_CONNECTION_MANAGER_SUCCESS: 'REMOVE_CONNECTION_MANAGER_SUCCESS',
-    REMOVE_CONNECTION_MANAGER_FAIL: 'REMOVE_CONNECTION_MANAGER_FAIL',
-    SELECT_CONNECTION_MANAGER: 'SELECT_CONNECTION_MANAGER'
-}
-
-export const selectConnectionAction = (connection) => {
-    return { 
-        type: connectionManagerActionTypes.SELECT_CONNECTION_MANAGER,
-        data: { connection }
-    }
+    REMOVE_CONNECTION_MANAGER_FAIL: 'REMOVE_CONNECTION_MANAGER_FAIL'
 }
 
 export const saveDataAction = (value) => {

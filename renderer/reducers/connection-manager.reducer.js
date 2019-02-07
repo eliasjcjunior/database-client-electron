@@ -6,7 +6,6 @@ const initialReducer = {
 }
 
 const reducer = (state = initialReducer, action) => {
-    console.log(action);
     switch (action.type) {
         case connectionManagerActionTypes.SAVE_CONNECTION_MANAGER_START:
             return { ...state };
@@ -26,8 +25,6 @@ const reducer = (state = initialReducer, action) => {
             return {...state };
         case connectionManagerActionTypes.REMOVE_CONNECTION_MANAGER_FAIL:
             return {...state , error: action.error};
-        case connectionManagerActionTypes.SELECT_CONNECTION_MANAGER:
-            return {...state , connection: action.data.connection};
         default:
             return state
     }
