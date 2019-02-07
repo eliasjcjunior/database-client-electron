@@ -2,8 +2,7 @@ import { connectionManagerActionTypes } from '../actions';
 
 const initialReducer = {
     connections: [],
-    connection: null,
-    lastConnection: null
+    connection: null
 }
 
 const reducer = (state = initialReducer, action) => {
@@ -26,8 +25,6 @@ const reducer = (state = initialReducer, action) => {
             return {...state };
         case connectionManagerActionTypes.REMOVE_CONNECTION_MANAGER_FAIL:
             return {...state , error: action.error};
-        case connectionManagerActionTypes.SELECT_CONNECTION_MANAGER:
-            return {...state , connection: action.data.connection};
         default:
             return state
     }

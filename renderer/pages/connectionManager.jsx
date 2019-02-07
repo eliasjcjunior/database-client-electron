@@ -1,9 +1,8 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import { saveDataAction, getAllDataAction, removeDataAction, selectConnectionAction } from '../actions';
+import { saveDataAction, getAllDataAction, removeDataAction } from '../actions';
 import {  Button, Table, Icon, Menu, Dropdown } from 'antd';
 import electron from 'electron';
-import { sendTo } from '../helpers';
 
 class ConnectionManager extends Component {
 
@@ -16,7 +15,6 @@ class ConnectionManager extends Component {
 
   constructor(props) {
     super(props);
-    this.selectConnectionByMenu = this.selectConnectionByMenu.bind(this);
     this.saveConnection = this.saveConnection.bind(this);
     this.handleConnections = this.handleConnections.bind(this);
     this.removeConnection = this.removeConnection.bind(this);
@@ -47,10 +45,6 @@ class ConnectionManager extends Component {
         connections: nextProps.connections,
         connection: nextProps.connection
       };
-  }
-
-  selectConnectionByMenu(connection) {
-    this.props.selectConnectionAction(connection);
   }
 
   selectMenuItem(key){
@@ -160,4 +154,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { saveDataAction, getAllDataAction, removeDataAction, selectConnectionAction })(ConnectionManager);
+export default connect(mapStateToProps, { saveDataAction, getAllDataAction, removeDataAction })(ConnectionManager);
