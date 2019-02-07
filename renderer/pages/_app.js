@@ -6,12 +6,21 @@ import withRedux from "next-redux-wrapper";
 import thunk from 'redux-thunk';
 import rootReducer from '../reducers';
 
+let reduxStore = null;
+
 const makeStore = () => {
     return createStore(
         rootReducer,
         applyMiddleware(thunk)
     );
 };
+
+export const initStore = () => {
+  if (!reduxStore) {
+    reduxStore = makeStore()
+  }
+  return reduxStore
+}
 
 class MyApp extends App {
 
@@ -36,4 +45,4 @@ class MyApp extends App {
 
 }
 
-export default withRedux(makeStore)(MyApp);
+export default withRedux(initStore)(MyApp);

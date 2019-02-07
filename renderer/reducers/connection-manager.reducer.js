@@ -2,11 +2,11 @@ import { connectionManagerActionTypes } from '../actions';
 
 const initialReducer = {
     connections: [],
-    connection: null
+    connection: null,
+    lastConnection: null
 }
 
 const reducer = (state = initialReducer, action) => {
-    console.log(action);
     switch (action.type) {
         case connectionManagerActionTypes.SAVE_CONNECTION_MANAGER_START:
             return { ...state };

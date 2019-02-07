@@ -8,5 +8,6 @@ const dbFactory = (filename) => Datastore.create({
 });
 
 export default  {
-    connections: dbFactory('connections.db')
+    connections: dbFactory('connections.db'),
+    selectDatabase: dbFactory('selectDatabase.db')
 };

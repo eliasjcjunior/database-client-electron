@@ -14,6 +14,7 @@ module.exports = withLess({
   }),
   exportPathMap: async function () {
     return {
+      '/connection-manager': { page: '/connectionManager' },
       '/home': { page: '/home' }
     }
   },
