@@ -57,26 +57,21 @@ app.on('ready', () => {
     connectionSettingsScreen.loadFile(connectionSettingsFiles);
   } else {
     modalScreen.loadURL(`${host}${uri.connectionManager}`);
-    modalScreen.webContents.openDevTools();
     modalScreen.webContents.on('did-finish-load', () => {
       // Home
       homeScreen.loadURL(`${host}${uri.home}`);
-      homeScreen.webContents.openDevTools();
-      homeScreen.hide();
       homeScreen.webContents.on('close', () => {
         app.quit();
       });
       // Connection Settings
       connectionSettingsScreen.loadURL(`${host}${uri.connectionSettings}`);
-      connectionSettingsScreen.hide();
-    });
-
-    // Prevent from destroying connection settings screen
-    connectionSettingsScreen.on('close', event => {
-      event.preventDefault();
-      connectionSettingsScreen.hide();
     });
   }
+  // Prevent from destroying connection settings screen
+  connectionSettingsScreen.on('close', event => {
+    event.preventDefault();
+    connectionSettingsScreen.hide();
+  });
 });
 
 ipcMain.on('call-home', (event, args) => {

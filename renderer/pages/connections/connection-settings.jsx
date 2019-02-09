@@ -21,19 +21,25 @@ class Settings extends Component {
 
   constructor(props) {
     super(props);
-
     this.handleConfirmBlur = this.handleConfirmBlur.bind(this);
     this.toggleChecked = this.toggleChecked.bind(this);
   }
 
-  getConnection() {
+  getConnection = () => {
     if (this.ipc) {
       this.ipc.on('message', (e, args) => {
         console.log('event', e);
         console.log('args', args);
       })
     }
-  }
+  };
+
+  getWindows = () => {
+    let windows = electron.BrowserWindow.getAllWindows();
+    windows.forEach(window => {
+      console.log(window);
+    });
+  };
 
   enterLoading = () => {
     this.setState({ loading: true });
