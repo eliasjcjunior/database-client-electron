@@ -1,6 +1,8 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {ipcRenderer} from 'electron';
+import TreeView from '../components/TreeView';
+import data from '../data';
 
 class Home extends Component {
     ipc = ipcRenderer || false;

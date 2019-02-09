@@ -5,7 +5,6 @@ import {Menu, Item, Separator, contextMenu} from 'react-contexify';
 
 import styles from './styles';
 
-
 // Menu Ids declaration
 const connection_menu = "connection_menu";
 const collection_menu = "collection_menu";
@@ -20,7 +19,7 @@ const getIcon = (node) => {
   } else {
     return <img src={require('../../static/svg/table.svg')} className="padding-right-5" alt="logo" />;
   }
-}
+};
 
 const getMenuId = (type) => {
   if (type === 'connection' || type === 'database') {
@@ -28,7 +27,7 @@ const getMenuId = (type) => {
   } else if (type === 'collectionsFolder' || type === 'collection') {
     return collection_menu;
   }
-}
+};
 
 class TreeView extends React.Component {
   constructor() {
@@ -51,8 +50,8 @@ class TreeView extends React.Component {
       return (
         <div onDoubleClick={() => this.loadCollection(node)} style={style.base}>
           <div onContextMenu={(event) => { this.handleEvent(event, node) }} props={node}
-            event="onClick"
-            style={style.title}>
+               event="onClick"
+               style={style.title}>
             {getIcon(node)}
             <span>{node.name}</span>
           </div>
@@ -117,13 +116,13 @@ class TreeView extends React.Component {
 
     return (
       <div>
-          <Treebeard
-            data={data}
-            decorators={decorators}
-            onToggle={this.onToggle}
-            style={styles}/> 
-            {this.collectionMenuStart()}
-            {this.connectionMenuStart()}
+        <Treebeard
+          data={data}
+          decorators={decorators}
+          onToggle={this.onToggle}
+          style={styles}/>
+        {this.collectionMenuStart()}
+        {this.connectionMenuStart()}
       </div>
     );
   }
