@@ -76,7 +76,6 @@ class ConnectionManager extends Component {
   }
 
   render() {
-
     const { connections } = this.props;
 
     const menu = (

@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { startConnection, saveDataAction, getAllDataAction } from '../../actions';
-import { Button, Checkbox, Form, Input, InputNumber, Select, Tabs } from 'antd';
+import { Button, Checkbox, Col, Form, Input, InputNumber, Row, Tabs } from 'antd';
 import electron from 'electron';
 
 const InputGroup = Input.Group;
-const { Option } = Select;
 
 class Settings extends Component {
   ipcRenderer = electron.ipcRenderer || false;
@@ -38,25 +37,29 @@ class Settings extends Component {
 
   enterLoading = () => {
     this.setState({ loading: true });
-  }
+  };
 
   enterIconLoading = () => {
     this.setState({ iconLoading: true });
-  }
+  };
 
-  handleConfirmBlur = (e) => {
+  handleConfirmBlur = e => {
     const value = e.target.value;
     this.setState({ confirmDirty: this.state.confirmDirty || !!value });
   };
 
-  handleInput(evt) {
+  handleInput = e => {
     const changes = {};
-    changes[evt.target.name] = evt.target.value;
+    changes[e.target.name] = e.target.value;
     this.setState(changes);
-  }
+  };
 
-  handleSubmit = (e) => {() => 
-    e.preventDefault();() => 
+  handleReset = () => {
+    this.props.form.resetFields();
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.props.saveDataAction(values);
@@ -67,7 +70,7 @@ class Settings extends Component {
 
   toggleChecked = () => {
     this.setState({ performAuth: !this.state.performAuth });
-  }
+  };
 
   render() {
     const TabPane = Tabs.TabPane;
@@ -107,7 +110,7 @@ class Settings extends Component {
                   {getFieldDecorator('port', {
                     rules: [{
                       required: true,
-                      message: 'An IP adcheckedect.'
+                      message: 'An IP port is required to connect.'
                     }],
                     option: {
                       initialValue: 3306
@@ -185,11 +188,23 @@ class Settings extends Component {
               </Form.Item>
             </TabPane>
           </Tabs>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Save
-          </Button>
-          </Form.Item>
+          <div>
+            <Row>
+              <Col span={15}></Col>
+              <Col span={9}>
+                <Row>
+                  <Col span={24} style={{ textAlign: 'right' }}>
+                    <Button type="primary" htmlType="submit">
+                      Save
+                    </Button>
+                    <Button style={{ marginLeft: 8 }} onClick={this.handleReset}>
+                      Cancel
+                    </Button>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          </div>
         </Form>
       </div>
     )
