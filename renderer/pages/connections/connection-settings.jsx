@@ -1,46 +1,41 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { startConnection } from '../../actions';
-import { Form, Input, InputNumber, Select, Tabs } from 'antd'
+import { startConnection, saveDataAction, getAllDataAction } from '../../actions';
+import { Button, Checkbox, Form, Input, InputNumber, Select, Tabs } from 'antd'
 
 const InputGroup = Input.Group;
 const { Option } = Select;
 
-class ConnectionSettings extends Component {
+class Settings extends Component {
   state = {
+    connections: [],
+    connection: null,
     confirmDirty: false,
     autoCompleteResult: [],
+    loading: false,
+    loadingIcon: false,
+    performAuth: true,
+    form: {}
   };
 
   constructor(props) {
     super(props);
-    this.selectRow = this.selectRow.bind(this);
+
+    this.handleConfirmBlur = this.handleConfirmBlur.bind(this);
   }
 
-  handleSubmit = (e) => {
-    e.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        console.log('Received values of form: ', values);
-      }
-    });
-  };
+  enterLoading = () => {
+    this.setState({ loading: true });
+  }
+
+  enterIconLoading = () => {
+    this.setState({ iconLoading: true });
+  }
 
   handleConfirmBlur = (e) => {
     const value = e.target.value;
     this.setState({ confirmDirty: this.state.confirmDirty || !!value });
   };
-
-  selectRow(selectRow, index) {
-    const dataSource = this.state.dataSource.map(item => {
-      return {
-        ...item,
-        selected: false
-      }
-    });
-    dataSource[index].selected = true;
-    this.setState({ selectRow, dataSource });
-  }
 
   handleInput(evt) {
     const changes = {};
@@ -48,84 +43,153 @@ class ConnectionSettings extends Component {
     this.setState(changes);
   }
 
-  callback(key) {
-    console.log(key);
+  handleSubmit = (e) => {
+    e.preventDefault();
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        this.props.saveDataAction(values);
+        this.props.getAllDataAction();
+      }
+    });
+  };
+
+  toggleChecked = () => {
+    this.setState({ performAuth: !this.state.performAuth });
   }
 
   render() {
     const TabPane = Tabs.TabPane;
     const { getFieldDecorator } = this.props.form;
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 8 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 },
-      },
-    };
-    const ipPattern = /^\d{1,3}(\.\d{1,3}){3}\/*\d{0,2}$/;
     return (
-      <Tabs defaultActiveKey="1" type="card">
-        <TabPane tab="Connection" key="1">
-          <Form>
-            <Form.Item
-              label='Name'
-            >
-              {getFieldDecorator('connectionName', {
-                rules: [{
-                  required: true, message: 'Please define your connection name.'
-                }]
-              })(
-                <Input />
-              )}
-            </Form.Item>
-            <Form.Item
-              label='Address'
-            >
-              <InputGroup compact>
-                {getFieldDecorator('addressNumber', {
+      <div style={{ margin: 10 }}>
+        <Form onSubmit={e => this.handleSubmit(e)}>
+          <Tabs defaultActiveKey="1">
+            <TabPane tab="Connection" key="1">
+              <Form.Item
+                label='Name'
+              >
+                {getFieldDecorator('connectionName', {
                   rules: [{
-                    required: true, message: 'An IP address is required to connect.'
+                    required: true, message: 'Please define your connection name.'
                   }]
                 })(
-                  <InputNumber
-                    style={{ width: '80%' }}
-                    placeholder='Address'
-                  />
+                  <Input name='connectionName' />
                 )}
-                {getFieldDecorator('portNumber', {
+              </Form.Item>
+              <Form.Item
+                label='Address'
+              >
+                <InputGroup compact>
+                  {getFieldDecorator('host', {
+                    rules: [{
+                      required: true,
+                      message: 'An IP address is required to connect.'
+                    }]
+                  })(
+                    <Input
+                      style={{ width: '80%' }}
+                      placeholder='Address'
+                      name='host'
+                    />
+                  )}
+                  {getFieldDecorator('port', {
+                    rules: [{
+                      required: true,
+                      message: 'An IP adcheckedect.'
+                    }],
+                    option: {
+                      initialValue: 3306
+                    }
+                  })(
+                    <InputNumber
+                      style={{ width: '20%' }}
+                      min={0}
+                      max={65535}
+                      placeholder='Port'
+                      name='port'
+                    />
+                  )}
+                </InputGroup>
+              </Form.Item>
+            </TabPane>
+            <TabPane tab="Authentication" key="2">
+              <div>
+                <p style={{ marginBottom: '20px' }}>
+                  <Checkbox
+                    checked={this.state.performAuth}
+                    onClick={() => this.toggleChecked}
+                  >
+                    Perform Authentication
+                  </Checkbox>
+                </p>
+              </div>
+              <Form.Item
+                label='Database Name'
+              >
+                {getFieldDecorator('database', {
                   rules: [{
-                    required: true, message: 'An IP address is required to connect.'
+                    required: this.state.performAuth,
+                    message: 'Please define specify your database name.'
                   }]
                 })(
-                  <InputNumber
-                    style={{ width: '20%' }}
-                    defaultValue={3306}
-                    min={0}
-                    max={99999}
-                    placeholder='Port'
+                  <Input
+                    name='database'
+                    disabled={!this.state.performAuth}
                   />
                 )}
-              </InputGroup>
-            </Form.Item>
-          </Form>
-        </TabPane>
-        <TabPane tab="Authentication" key="2">
-          Auth Form
-        </TabPane>
-      </Tabs>
+              </Form.Item>
+              <Form.Item
+                label='User Name'
+              >
+                {getFieldDecorator('username', {
+                  rules: [{
+                    required: this.state.performAuth,
+                    message: 'Please define your user name.'
+                  }]
+                })(
+                  <Input
+                    name='username'
+                    disabled={!this.state.performAuth}
+                  />
+                )}
+              </Form.Item>
+              <Form.Item
+                label='Password'
+              >
+                <InputGroup compact>
+                  {getFieldDecorator('password', {
+                    rules: [{
+                      required: false,
+                      message: 'An IP address is required to connect.'
+                    }]
+                  })(
+                    <Input.Password
+                      placeholder='Password'
+                      name='password'
+                      disabled={!this.state.performAuth}
+                    />
+                  )}
+                </InputGroup>
+              </Form.Item>
+            </TabPane>
+          </Tabs>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Save
+          </Button>
+          </Form.Item>
+        </Form>
+      </div>
     )
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    //log: state.connectionReducer.data.log
+    connection: state.connectionManagerReducer.connection
   };
 };
 
-const WrappedClass = Form.create({ name: 'conSettings' })(ConnectionSettings);
+const WrappedClass = Form.create({ name: 'settings' })(Settings);
 
-export default connect(mapStateToProps, { startConnection })(WrappedClass);
+export default connect(mapStateToProps, { startConnection, saveDataAction, getAllDataAction })(WrappedClass);
