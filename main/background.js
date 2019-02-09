@@ -1,6 +1,6 @@
 import {join} from 'path'
-import {app, BrowserWindow, ipcMain, screen} from 'electron';
-import { enableHotReload } from './helpers'
+import {app, BrowserWindow, ipcMain} from 'electron';
+import {enableHotReload} from './helpers'
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -12,7 +12,7 @@ const host = 'http://localhost:8888';
 const uri = {
   connectionManager: '/connection-manager',
   connectionSettings: '/connections-settings',
-  home: '/home'
+  home: '/home'g
 };
 
 if (!isProd) {
@@ -73,14 +73,14 @@ app.on('ready', () => {
         connectionSettingsScreen.hide();
       });
     });
-    
+
   }
 });
 
 ipcMain.on('call-home', (event, args) => {
   homeScreen.center();
   homeScreen.show();
-  homeScreen.webContents.send ('message', args);
+  homeScreen.webContents.send('message', args);
   modalScreen.hide();
 });
 
@@ -92,4 +92,4 @@ ipcMain.on('call-connection-settings', (event, args) => {
 
 app.on('window-all-closed', () => {
   app.quit()
-})
+});

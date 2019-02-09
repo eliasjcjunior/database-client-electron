@@ -1,13 +1,9 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import { remote, ipcRenderer} from 'electron';
-import TreeView from '../components/TreeView';
-import data from '../data';
+import {ipcRenderer} from 'electron';
 
 class Home extends Component {
-
     ipc = ipcRenderer || false;
-
     state = {
         connection: null
     };
