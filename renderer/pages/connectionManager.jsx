@@ -30,6 +30,10 @@ class ConnectionManager extends Component {
     this.ipcRenderer.send('call-home', { connection });
   }
 
+  openConnectionSettings() {
+    this.ipcRenderer.send('call-connection-settings');
+  }
+
   removeConnection() {
     const { removeDataAction, connection, getAllDataAction } = this.props;
     removeDataAction(connection._id);
@@ -137,7 +141,7 @@ class ConnectionManager extends Component {
     return (
       <div style={{ margin: 10, marginTop: 20}}>
         <div style={{ marginBottom: 20}}>
-          <Button onClick={() => this.saveConnection()} style={{backgroundColor: 'green', width: '150px', color: 'white'}}>
+          <Button onClick={() => {this.openConnectionSettings()}} style={{backgroundColor: 'green', width: '150px', color: 'white'}}>
             Create Connection
           </Button>
         </div>

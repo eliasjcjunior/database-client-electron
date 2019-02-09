@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { startConnection, saveDataAction, getAllDataAction } from '../../actions';
-import { Button, Checkbox, Form, Input, InputNumber, Select, Tabs } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Select, Tabs } from 'antd';
+import electron from 'electron';
 
 const InputGroup = Input.Group;
 const { Option } = Select;
 
 class Settings extends Component {
+  ipcRenderer = electron.ipcRenderer || false;
   state = {
     connections: [],
     connection: null,
@@ -22,6 +24,16 @@ class Settings extends Component {
     super(props);
 
     this.handleConfirmBlur = this.handleConfirmBlur.bind(this);
+    this.toggleChecked = this.toggleChecked.bind(this);
+  }
+
+  getConnection() {
+    if (this.ipc) {
+      this.ipc.on('message', (e, args) => {
+        console.log('event', e);
+        console.log('args', args);
+      })
+    }
   }
 
   enterLoading = () => {
@@ -43,8 +55,8 @@ class Settings extends Component {
     this.setState(changes);
   }
 
-  handleSubmit = (e) => {
-    e.preventDefault();
+  handleSubmit = (e) => {() => 
+    e.preventDefault();() => 
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.props.saveDataAction(values);
@@ -117,7 +129,7 @@ class Settings extends Component {
                 <p style={{ marginBottom: '20px' }}>
                   <Checkbox
                     checked={this.state.performAuth}
-                    onClick={() => this.toggleChecked}
+                    onClick={this.toggleChecked}
                   >
                     Perform Authentication
                   </Checkbox>
