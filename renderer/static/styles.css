@@ -9,3 +9,5 @@ body {
 tr {
     font-size: 12px;
 }
+
+li, ul { cursor: pointer; }
