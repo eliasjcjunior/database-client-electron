@@ -1,6 +1,6 @@
-import { join } from 'path';
-import { app, BrowserWindow, ipcMain, screen } from 'electron';
-import { enableHotReload } from './helpers';
+import {join} from 'path'
+import {app, BrowserWindow, ipcMain, screen} from 'electron';
+import { enableHotReload } from './helpers'
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -11,7 +11,7 @@ global.connectionSettingsScreen = null;
 const host = 'http://localhost:8888';
 const uri = {
   connectionManager: '/connection-manager',
-  connectionSettings: '/connections/connection-settings',
+  connectionSettings: '/connections-settings',
   home: '/home'
 };
 
@@ -20,6 +20,7 @@ if (!isProd) {
   const userDataPath = app.getPath('userData');
   app.setPath('userData', `${userDataPath} (development)`);
 }
+
 
 app.on('ready', () => {
   modalScreen = new BrowserWindow({
@@ -36,7 +37,7 @@ app.on('ready', () => {
   if (isProd) {
     const homeFile = join(app.getAppPath(), 'app/home/index.html');
     const modalFile = join(app.getAppPath(), 'app/connection-manager/index.html');
-    const connectionSettingsFiles = join(app.getAppPath(), 'app/connections/connection-settings.html');
+    const connectionSettingsFiles = join(app.getAppPath(), 'app/connections-settings/index.html');
     homeScreen.loadFile(homeFile);
     modalScreen.loadFile(modalFile);
     connectionSettingsScreen.loadFile(connectionSettingsFiles);
@@ -52,6 +53,7 @@ app.on('ready', () => {
         maximizable: false
       });
       homeScreen.loadURL(`${host}${uri.home}`);
+      homeScreen.webContents.openDevTools();
       homeScreen.hide();
       homeScreen.webContents.on('close', () => {
         app.quit();
@@ -71,13 +73,14 @@ app.on('ready', () => {
         connectionSettingsScreen.hide();
       });
     });
+    
   }
 });
 
 ipcMain.on('call-home', (event, args) => {
   homeScreen.center();
   homeScreen.show();
-  homeScreen.webContents.send('message', args);
+  homeScreen.webContents.send ('message', args);
   modalScreen.hide();
 });
 
@@ -88,5 +91,5 @@ ipcMain.on('call-connection-settings', (event, args) => {
 });
 
 app.on('window-all-closed', () => {
-  app.quit();
-});
+  app.quit()
+})
