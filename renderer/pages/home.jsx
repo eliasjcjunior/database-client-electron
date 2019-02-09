@@ -1,6 +1,8 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import { remote, ipcRenderer} from 'electron';
+import TreeView from '../components/TreeView';
+import data from '../data';
 
 class Home extends Component {
 
@@ -31,10 +33,9 @@ class Home extends Component {
             <div
                 style={{
                 margin: 10,
-                marginTop: 20,
-                backgroundColor: 'red'
+                marginTop: 20
             }}>
-                HELLLLOOO
+                <TreeView data={data}/>
             </div>
         )
     }
