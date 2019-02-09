@@ -19,6 +19,7 @@ class ConnectionManager extends Component {
     this.handleConnections = this.handleConnections.bind(this);
     this.removeConnection = this.removeConnection.bind(this);
     this.connect = this.connect.bind(this);
+    this.openConnectionSettings = this.openConnectionSettings.bind(this);
     this.props.getAllDataAction();
   }
 
