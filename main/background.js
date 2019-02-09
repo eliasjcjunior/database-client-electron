@@ -12,7 +12,7 @@ const host = 'http://localhost:8888';
 const uri = {
   connectionManager: '/connection-manager',
   connectionSettings: '/connections-settings',
-  home: '/home'g
+  home: '/home'
 };
 
 if (!isProd) {
@@ -20,7 +20,6 @@ if (!isProd) {
   const userDataPath = app.getPath('userData');
   app.setPath('userData', `${userDataPath} (development)`);
 }
-
 
 app.on('ready', () => {
   modalScreen = new BrowserWindow({
