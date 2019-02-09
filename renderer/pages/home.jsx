@@ -6,11 +6,11 @@ import data from '../data';
 
 class Home extends Component {
 
-    ipc = ipcRenderer || false
+    ipc = ipcRenderer || false;
 
     state = {
         connection: null
-    }
+    };
 
     constructor(props) {
         super(props);
