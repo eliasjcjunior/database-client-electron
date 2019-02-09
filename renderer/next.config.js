@@ -22,4 +22,4 @@ module.exports = withImages(withLess({
   lessLoaderOptions: {
     javascriptEnabled: true
   }
-}))
+}));
