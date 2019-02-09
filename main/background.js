@@ -29,6 +29,21 @@ app.on('ready', () => {
     resizable: false,
     maximizable: false
   });
+  homeScreen = new BrowserWindow({
+    width: 1200,
+    height: 1000,
+    resizable: false,
+    maximizable: false
+  });
+  homeScreen.hide();
+  connectionSettingsScreen = new BrowserWindow({
+    width: 600,
+    height: 600,
+    resizable: false,
+    maximizable: false,
+    title: 'Connection Settings'
+  });
+  connectionSettingsScreen.hide();
 
   modalScreen.webContents.on('close', () => {
     app.quit();
@@ -46,12 +61,6 @@ app.on('ready', () => {
     modalScreen.webContents.openDevTools();
     modalScreen.webContents.on('did-finish-load', () => {
       // Home
-      homeScreen = new BrowserWindow({
-        width: 1200,
-        height: 1000,
-        resizable: false,
-        maximizable: false
-      });
       homeScreen.loadURL(`${host}${uri.home}`);
       homeScreen.webContents.openDevTools();
       homeScreen.hide();
@@ -59,21 +68,15 @@ app.on('ready', () => {
         app.quit();
       });
       // Connection Settings
-      connectionSettingsScreen = new BrowserWindow({
-        width: 600,
-        height: 600,
-        resizable: false,
-        maximizable: false,
-        title: 'Connection Settings'
-      });
       connectionSettingsScreen.loadURL(`${host}${uri.connectionSettings}`);
       connectionSettingsScreen.hide();
-      connectionSettingsScreen.on('close', event => {
-        event.preventDefault();
-        connectionSettingsScreen.hide();
-      });
     });
 
+    // Prevent from destroying connection settings screen
+    connectionSettingsScreen.on('close', event => {
+      event.preventDefault();
+      connectionSettingsScreen.hide();
+    });
   }
 });
 
