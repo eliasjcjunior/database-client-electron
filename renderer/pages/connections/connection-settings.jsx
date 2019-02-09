@@ -5,7 +5,7 @@ import {Form, Input, Select, Tabs} from 'antd'
 
 const {Option} = Select;
 
-class Settings extends Component {
+class ConnectionSettings extends Component {
   state = {
     confirmDirty: false,
     autoCompleteResult: [],
@@ -93,6 +93,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-const WrappedSettings = Form.create({ name: 'connectionSettings' })(Settings);
+const WrappedClass = Form.create({ name: 'connectionSettings' })(ConnectionSettings);
 
-export default connect(mapStateToProps, {startConnection})(WrappedSettings);
+export default connect(mapStateToProps, {startConnection})(WrappedClass);
