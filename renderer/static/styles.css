@@ -11,3 +11,7 @@ tr {
 }
 
 li, ul { cursor: pointer; }
+
+.padding-right-5 {
+    padding-right: 5px;
+}

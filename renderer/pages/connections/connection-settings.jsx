@@ -8,6 +8,8 @@ const InputGroup = Input.Group;
 
 class Settings extends Component {
   ipcRenderer = electron.ipcRenderer || false;
+  BrowserWindow = electron.BrowserView || false;
+
   state = {
     connections: [],
     connection: null,
@@ -35,7 +37,7 @@ class Settings extends Component {
   };
 
   getWindows = () => {
-    let windows = electron.BrowserWindow.getAllWindows();
+    let windows = BrowserWindow.getAllWindows();
     windows.forEach(window => {
       console.log(window);
     });

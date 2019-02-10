@@ -1,7 +1,7 @@
 export default[
     {
         name : 'Pathfinder-AWS',
-        toggled : true,
+        toggled : false,
         type : "connection",
         children : [
             {

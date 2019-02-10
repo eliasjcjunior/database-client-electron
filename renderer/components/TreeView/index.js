@@ -30,8 +30,8 @@ const getMenuId = (type) => {
 };
 
 class TreeView extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
       node: null,
@@ -48,6 +48,21 @@ class TreeView extends React.Component {
   changeDecorator() {
     decorators.Header = ({ style, node }) => {
       return (
+        <div disabled={node.loading} onDoubleClick={() => this.props.loadCollection(node)} style={style.base}>
+          <div onContextMenu={(event) => { this.handleEvent(event, node) }} props={node}
+               event="onClick"
+               style={style.title}>
+            {getIcon(node)}
+            <span>{node.name}</span>
+          </div>
+        </div>
+      );
+    };
+  }
+
+  changeLoading() {
+    decorators.Loading = ({ style, node }) => {
+      return (
         <div onDoubleClick={() => this.loadCollection(node)} style={style.base}>
           <div onContextMenu={(event) => { this.handleEvent(event, node) }} props={node}
                event="onClick"
@@ -60,16 +75,10 @@ class TreeView extends React.Component {
     };
   }
 
-  loadCollection(node) {
-    if (node.type === "collection") {
-      console.log(`Collection selected: ${node.name}`);
-    }
-  }
-
   connectionMenuStart() {
     return (
       <Menu style={{ borderRadius: 5, padding: 5 }} id={connection_menu}>
-        <Item onClick={this.onClick}>Refresh</Item>
+        <Item onClick={this.onClick}>Show Info</Item>
         <Separator />
         <Item>Edit</Item>
         <Item>Remove</Item>
@@ -80,7 +89,7 @@ class TreeView extends React.Component {
   collectionMenuStart() {
     return (
       <Menu style={{ borderRadius: 5, padding: 5 }} id={collection_menu}>
-        <Item onClick={this.onClick}>Create Collection</Item>
+        <Item onClick={this.onClick}>Show Info</Item>
         <Item onClick={this.onClick}>Remove Collection</Item>
         <Separator />
         <Item>Export Collection</Item>
