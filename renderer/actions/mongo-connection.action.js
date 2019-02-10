@@ -1,9 +1,13 @@
 import { Connection } from '../services/mongo/connection';
+import db from '../services/database';
 
 export const mongoConnectionActionTypes = {
-    MONGO_CONNECTION_START: 'MONGO_CONNECTION_START',
-    MONGO_CONNECTION_SUCCESS: 'MONGO_CONNECTION_SUCCESS',
-    MONGO_CONNECTION_FAIL: 'MONGO_CONNECTION_FAIL',
+    LIST_HANDLER_CONNECTIONS_START: 'LIST_HANDLER_CONNECTIONS_START',
+    LIST_HANDLER_CONNECTIONS_SUCCESS: 'LIST_HANDLER_CONNECTIONS_SUCCESS',
+    LIST_HANDLER_CONNECTIONS_FAIL: 'LIST_HANDLER_CONNECTIONS_FAIL',
+    FIND_COLLECTION_SUCCESS: 'FIND_COLLECTION_SUCCESS',
+    FIND_COLLECTION_FAIL: 'FIND_COLLECTION_FAIL',
+    FIND_COLLECTION_START: 'FIND_COLLECTION_START'
 }
 
 export const startConnection = (connectionOptions) => {
@@ -18,7 +22,7 @@ export const startConnection = (connectionOptions) => {
         }));
     }
 
-    const handleCollections = (connecCollections) => {
+    const handleConnections = (connecCollections) => {
         return connecCollections.map(connecCollection => {
             return {
                 name : connecCollection.connectionName,
@@ -46,7 +50,7 @@ export const startConnection = (connectionOptions) => {
     }
 
     return dispatch => {
-        dispatch({ type: mongoConnectionActionTypes.MONGO_CONNECTION_START});
+        dispatch({ type: mongoConnectionActionTypes.LIST_HANDLER_CONNECTIONS_START});
         return Promise.all(connects).then(clients => {
             return getCollections(clients, connects).then(collections => {
                 const connecCollections = collections.map((collection, index) => {
@@ -55,10 +59,33 @@ export const startConnection = (connectionOptions) => {
                         collections:collection
                     }
                 });
-                dispatch({ type: mongoConnectionActionTypes.MONGO_CONNECTION_SUCCESS , data: { collections: handleCollections(connecCollections) }});
+                clients.forEach(client => {
+                    client.close();
+                });
+                dispatch({ type: mongoConnectionActionTypes.LIST_HANDLER_CONNECTIONS_SUCCESS , data: { handleConnections: handleConnections(connecCollections) }});
             });
         }).catch(error => {
-            dispatch({ type: mongoConnectionActionTypes.MONGO_CONNECTION_FAIL, error});
+            dispatch({ type: mongoConnectionActionTypes.LIST_HANDLER_CONNECTIONS_SUCCESS, error});
         });
       };
-  }
+}
+
+export const findCollection = (collection_name, connection_id) => {
+    return dispatch => {
+        dispatch({ type: mongoConnectionActionTypes.FIND_COLLECTION_START });
+            return db.connections.findOne({ '_id': connection_id })
+                .then(connection => {
+                    return new Connection(connection).getConnection()
+                        .then(client => {
+                            return client.db(connection.database).collection(collection_name).find().limit(10).toArray()
+                            .then(result => {
+                                console.log(result);
+                                dispatch({ type: mongoConnectionActionTypes.FIND_COLLECTION_SUCCESS , data: { collection: result }});
+                            });
+                        });
+                })
+                .catch(error => {
+                    dispatch({ type: mongoConnectionActionTypes.FIND_COLLECTION_FAIL , error});
+                });
+    }
+}
