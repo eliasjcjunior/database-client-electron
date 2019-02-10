@@ -19,6 +19,7 @@ class ConnectionManager extends Component {
     this.handleConnections = this.handleConnections.bind(this);
     this.removeConnection = this.removeConnection.bind(this);
     this.connect = this.connect.bind(this);
+    this.openConnectionSettings = this.openConnectionSettings.bind(this);
     this.props.getAllDataAction();
   }
 
@@ -28,6 +29,10 @@ class ConnectionManager extends Component {
 
   connect(connection) {
     this.ipcRenderer.send('call-home', { connection });
+  }
+
+  openConnectionSettings() {
+    this.ipcRenderer.send('call-connection-settings');
   }
 
   removeConnection() {
@@ -71,7 +76,6 @@ class ConnectionManager extends Component {
   }
 
   render() {
-
     const { connections } = this.props;
 
     const menu = (
@@ -137,7 +141,7 @@ class ConnectionManager extends Component {
     return (
       <div style={{ margin: 10, marginTop: 20}}>
         <div style={{ marginBottom: 20}}>
-          <Button onClick={() => this.saveConnection()} style={{backgroundColor: 'green', width: '150px', color: 'white'}}>
+          <Button onClick={() => {this.openConnectionSettings()}} style={{backgroundColor: 'green', width: '150px', color: 'white'}}>
             Create Connection
           </Button>
         </div>

@@ -9,15 +9,26 @@
     "appId": "com.example.nextron",
     "productName": "ClientNoSQL",
     "copyright": "Copyright © 2018",
-    "mac": {
-      "category": "public.app-category.developer-tools",
-      "darkModeSupport": true
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
     },
     "directories": {
       "output": "dist",
       "buildResources": "resources"
     },
-    "publish": null
+    "publish": {
+      "provider": "s3",
+      "bucket": "database-client-electron",
+      "acl": "public-read"
+    }
   },
   "scripts": {
     "dev": "node build/nextron.js",
@@ -26,7 +37,8 @@
     "build:win32": "node build/nextron.js build --win --ia32",
     "build:win64": "node build/nextron.js build --win --x64",
     "build:mac": "node build/nextron.js build --mac --x64",
-    "build:linux": "node build/nextron.js build --linux"
+    "build:linux": "node build/nextron.js build --linux",
+    "release:aws": "node build/nextron.js build -wl"
   },
   "dependencies": {
     "@zeit/next-css": "^1.0.1",

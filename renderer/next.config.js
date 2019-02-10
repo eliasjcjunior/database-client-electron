@@ -13,6 +13,9 @@ module.exports = withImages(withLess({
   exportPathMap: async function () {
     return {
       '/connection-manager': { page: '/connectionManager' },
+      '/connections-settings': {
+        page: '/connections/connection-settings'
+      },
       '/home': { page: '/home' }
     }
   },
@@ -22,4 +25,4 @@ module.exports = withImages(withLess({
   lessLoaderOptions: {
     javascriptEnabled: true
   }
-}))
+}));
