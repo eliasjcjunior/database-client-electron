@@ -27,6 +27,10 @@ class Settings extends Component {
     this.toggleChecked = this.toggleChecked.bind(this);
   }
 
+  callConnectionManager = () => {
+    this.ipcRenderer.send('call-connection-manager');
+  }
+
   getConnection = () => {
     if (this.ipc) {
       this.ipc.on('message', (e, args) => {
@@ -64,6 +68,7 @@ class Settings extends Component {
 
   handleReset = () => {
     this.props.form.resetFields();
+    this.callConnectionManager();
   };
 
   handleSubmit = e => {
@@ -72,6 +77,7 @@ class Settings extends Component {
       if (!err) {
         this.props.saveDataAction(values);
         this.props.getAllDataAction();
+        this.callConnectionManager();
       }
     });
   };
