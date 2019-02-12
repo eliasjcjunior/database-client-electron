@@ -31,7 +31,8 @@ app.on('ready', () => {
     width: 1200,
     height: 1000,
     resizable: false,
-    maximizable: false
+    maximizable: false,
+    show: false
   });
   modalScreen.hide();
   modalScreen.webContents.on('close', () => {
@@ -81,7 +82,8 @@ ipcMain.on('call-connection-manager', (event, args) => {
   });
 });
 
-ipcMain.on('call-connection-settings', (event, args) => {
+ipcMain.on('call-connection-settings',  (event, args) => {
+  console.log('args on call', args);
   if (isProd) {
     const modalFile = join(app.getAppPath(), 'app/connections-settings/index.html');
     modalScreen.loadFile(modalFile);
@@ -89,7 +91,6 @@ ipcMain.on('call-connection-settings', (event, args) => {
     modalScreen.loadURL(`${host}${uri.connectionSettings}`);
   }
   modalScreen.webContents.on('did-finish-load', () => {
-    modalScreen.center();
     modalScreen.show();
     modalScreen.webContents.send('message', args);
   });

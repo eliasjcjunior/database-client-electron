@@ -33,9 +33,10 @@ class Settings extends Component {
 
   getConnection = () => {
     if (this.ipc) {
-      this.ipc.on('message', (e, args) => {
+      this.ipc.on('me ssage', (e, args) => {
         console.log('event', e);
         console.log('args', args);
+        this.setState(args);
       })
     }
   };
@@ -87,6 +88,7 @@ class Settings extends Component {
   };
 
   render() {
+    this.getConnection();
     const TabPane = Tabs.TabPane;
     const { getFieldDecorator } = this.props.form;
     return (

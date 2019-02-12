@@ -1,7 +1,7 @@
-import React, {Component} from "react";
-import {connect} from "react-redux";
+import React, { Component } from "react";
+import { connect } from "react-redux";
 import { saveDataAction, getAllDataAction, removeDataAction } from '../actions';
-import {  Button, Table, Icon, Menu, Dropdown } from 'antd';
+import { Button, Table, Icon, Menu, Dropdown } from 'antd';
 import electron from 'electron';
 
 class ConnectionManager extends Component {
@@ -31,8 +31,9 @@ class ConnectionManager extends Component {
     this.ipcRenderer.send('call-home', { connection });
   }
 
-  openConnectionSettings() {
-    this.ipcRenderer.send('call-connection-settings');
+  openConnectionSettings(connection) {
+    console.log('con', connection);
+    this.ipcRenderer.sendSync('call-connection-settings', connection);
   }
 
   removeConnection() {
@@ -46,18 +47,18 @@ class ConnectionManager extends Component {
 
 
   static getDerivedStateFromProps(nextProps) {
-      return {
-        connections: nextProps.connections,
-        connection: nextProps.connection
-      };
+    return {
+      connections: nextProps.connections,
+      connection: nextProps.connection
+    };
   }
 
-  selectMenuItem(key){
+  selectMenuItem(key) {
     if (key === 'remove') {
       this.removeConnection();
     }
   }
-  
+
 
   handleInput(evt) {
     const changes = {};
@@ -79,7 +80,7 @@ class ConnectionManager extends Component {
     const { connections } = this.props;
 
     const menu = (
-      <Menu onClick={({ key }) => {this.selectMenuItem(key)}}>
+      <Menu onClick={({ key }) => { this.selectMenuItem(key) }}>
         <Menu.Item key="edit">
           <a>Edit</a>
         </Menu.Item>
@@ -88,7 +89,7 @@ class ConnectionManager extends Component {
         </Menu.Item>
       </Menu>
     );
-    
+
     const columns = [{
       title: 'Connection Name',
       dataIndex: 'connectionName',
@@ -96,9 +97,9 @@ class ConnectionManager extends Component {
       width: '25%',
       render: (text, record) => (
         <span>
-          <Icon style={{fontSize: 13, marginRight: 5}} type="bulb" theme="twoTone" twoToneColor="red" />
+          <Icon style={{ fontSize: 13, marginRight: 5 }} type="bulb" theme="twoTone" twoToneColor="red" />
           <Icon type="poweroff" theme="twoTone" twoToneColor="blue" />
-          <span style={{fontWeight: 'bold'}}>{text}</span>
+          <span style={{ fontWeight: 'bold' }}>{text}</span>
         </span>
       )
     }, {
@@ -128,9 +129,9 @@ class ConnectionManager extends Component {
       width: '25%',
       render: (text, record) => (
         <span>
-          <Button onClick={() => {this.connect(record)}} style={{width: 70, marginRight: 10, paddingLeft: 5, paddingRight: 5}}>Connect</Button>
-          <Dropdown onClick={() => {this.selectConnectionByMenu(record)}} overlay={menu} trigger={['click']} placement="bottomCenter">
-            <Button style={{width: 70}}>
+          <Button onClick={() => { this.openConnectionSettings(record) }} style={{ width: 70, marginRight: 10, paddingLeft: 5, paddingRight: 5 }}>Connect</Button>
+          <Dropdown onClick={() => { this.openConnectionSettings(record) }} overlay={menu} trigger={['click']} placement="bottomCenter">
+            <Button style={{ width: 70 }}>
               <Icon type="setting" />
             </Button>
           </Dropdown>
@@ -139,13 +140,13 @@ class ConnectionManager extends Component {
     }];
 
     return (
-      <div style={{ margin: 10, marginTop: 20}}>
-        <div style={{ marginBottom: 20}}>
-          <Button onClick={() => {this.openConnectionSettings()}} style={{backgroundColor: 'green', width: '150px', color: 'white'}}>
+      <div style={{ margin: 10, marginTop: 20 }}>
+        <div style={{ marginBottom: 20 }}>
+          <Button onClick={() => { this.openConnectionSettings() }} style={{ backgroundColor: 'green', width: '150px', color: 'white' }}>
             Create Connection
           </Button>
         </div>
-        <Table scroll={{y: 300}} pagination={false} dataSource={this.handleConnections(connections)} columns={columns} size="middle"/>
+        <Table scroll={{ y: 300 }} pagination={false} dataSource={this.handleConnections(connections)} columns={columns} size="middle" />
       </div>
     )
   }
