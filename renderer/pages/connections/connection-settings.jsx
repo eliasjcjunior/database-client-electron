@@ -2,14 +2,10 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { startConnection, saveDataAction, getAllDataAction } from '../../actions';
 import { Button, Checkbox, Col, Form, Input, InputNumber, Row, Tabs } from 'antd';
-import electron from 'electron';
 
 const InputGroup = Input.Group;
 
 class Settings extends Component {
-  ipcRenderer = electron.ipcRenderer || false;
-  BrowserWindow = electron.BrowserView || false;
-
   state = {
     connections: [],
     connection: null,
@@ -18,7 +14,8 @@ class Settings extends Component {
     loading: false,
     loadingIcon: false,
     performAuth: true,
-    form: {}
+    form: {},
+    con: {}
   };
 
   constructor(props) {
@@ -26,20 +23,6 @@ class Settings extends Component {
     this.handleConfirmBlur = this.handleConfirmBlur.bind(this);
     this.toggleChecked = this.toggleChecked.bind(this);
   }
-
-  callConnectionManager = () => {
-    this.ipcRenderer.send('call-connection-manager');
-  }
-
-  getConnection = () => {
-    if (this.ipc) {
-      this.ipc.on('message', (e, args) => {
-        console.log('event', e);
-        console.log('args', args);
-        this.setState(args);
-      })
-    }
-  };
 
   enterLoading = () => {
     this.setState({ loading: true });
@@ -62,7 +45,6 @@ class Settings extends Component {
 
   handleReset = () => {
     this.props.form.resetFields();
-    this.callConnectionManager();
   };
 
   handleSubmit = e => {
@@ -71,7 +53,6 @@ class Settings extends Component {
       if (!err) {
         this.props.saveDataAction(values);
         this.props.getAllDataAction();
-        this.callConnectionManager();
       }
     });
   };
@@ -81,7 +62,6 @@ class Settings extends Component {
   };
 
   render() {
-    this.getConnection();
     const TabPane = Tabs.TabPane;
     const { getFieldDecorator } = this.props.form;
     return (

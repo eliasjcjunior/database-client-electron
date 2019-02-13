@@ -1,16 +1,16 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { saveDataAction, getAllDataAction, removeDataAction } from '../actions';
-import { Button, Table, Icon, Menu, Dropdown } from 'antd';
+import { Button, Table, Icon, Menu, Modal, Dropdown } from 'antd';
 import electron from 'electron';
-
+import Settings from './connections/connection-settings';
 class ConnectionManager extends Component {
-
   ipcRenderer = electron.ipcRenderer || false;
-
+  selectedConnection = {};
   state = {
     connections: [],
-    connection: null
+    connection: null,
+    visible: false
   }
 
   constructor(props) {
@@ -24,7 +24,6 @@ class ConnectionManager extends Component {
   }
 
   updateConnection() {
-
   }
 
   connect(connection) {
@@ -32,7 +31,22 @@ class ConnectionManager extends Component {
   }
 
   openConnectionSettings(connection) {
-    this.ipcRenderer.sendSync('call-connection-settings', connection);
+    this.selectedConnection = connection;
+    this.setState({
+      visible: true
+    });
+  }
+
+  handleOk = (e) => {
+    this.setState({
+      visible: false
+    });
+  }
+
+  handleCancel = (e) => {
+    this.setState({
+      visible: false
+    });
   }
 
   removeConnection() {
@@ -141,6 +155,14 @@ class ConnectionManager extends Component {
     return (
       <div style={{ margin: 10, marginTop: 20 }}>
         <div style={{ marginBottom: 20 }}>
+          <Modal
+            title="Basic Modal"
+            visible={this.state.visible}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
+          >
+            <Settings con={this.selectedConnection} />
+          </Modal>
           <Button onClick={() => { this.openConnectionSettings() }} style={{ backgroundColor: 'green', width: '150px', color: 'white' }}>
             Create Connection
           </Button>

@@ -23,7 +23,7 @@ if (!isProd) {
 app.on('ready', () => {
   modalScreen = new BrowserWindow({
     width: 800,
-    height: 500,
+    height: 800,
     resizable: false,
     maximizable: false
   });
@@ -77,19 +77,6 @@ ipcMain.on('call-connection-manager', (event, args) => {
   }
   modalScreen.webContents.on('did-finish-load', () => {
     modalScreen.center();
-    modalScreen.show();
-    modalScreen.webContents.send('message', args);
-  });
-});
-
-ipcMain.on('call-connection-settings',  (event, args) => {
-  if (isProd) {
-    const modalFile = join(app.getAppPath(), 'app/connections-settings/index.html');
-    modalScreen.loadFile(modalFile);
-  } else {
-    modalScreen.loadURL(`${host}${uri.connectionSettings}`);
-  }
-  modalScreen.webContents.on('did-finish-load', () => {
     modalScreen.show();
     modalScreen.webContents.send('message', args);
   });
