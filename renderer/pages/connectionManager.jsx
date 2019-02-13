@@ -32,7 +32,6 @@ class ConnectionManager extends Component {
   }
 
   openConnectionSettings(connection) {
-    console.log('con', connection);
     this.ipcRenderer.sendSync('call-connection-settings', connection);
   }
 

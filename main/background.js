@@ -83,7 +83,6 @@ ipcMain.on('call-connection-manager', (event, args) => {
 });
 
 ipcMain.on('call-connection-settings',  (event, args) => {
-  console.log('args on call', args);
   if (isProd) {
     const modalFile = join(app.getAppPath(), 'app/connections-settings/index.html');
     modalScreen.loadFile(modalFile);
