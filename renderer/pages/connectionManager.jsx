@@ -7,11 +7,32 @@ import Settings from './connections/connection-settings';
 
 class ConnectionManager extends Component {
   ipcRenderer = electron.ipcRenderer || false;
-  selectedConnection = {};
+  defaultFormValues = {
+    connectionName: {
+      value: ''
+    },
+    host: {
+      value: ''
+    },
+    port: {
+      value: 3306
+    },
+    database: {
+      value: ''
+    },
+    username: {
+      value: ''
+    },
+    password: {
+      value: ''
+    }
+  };
   state = {
     connections: [],
     connection: null,
-    visible: false
+    visible: false,
+    modalTitle: '',
+    fields: {...this.defaultFormValues}
   };
 
   constructor(props) {
@@ -21,7 +42,7 @@ class ConnectionManager extends Component {
     this.removeConnection = this.removeConnection.bind(this);
     this.connect = this.connect.bind(this);
     this.openConnectionSettings = this.openConnectionSettings.bind(this);
-    this.hideModal = this.hideModal.bind(this);
+    this.hide = this.hide.bind(this);
     this.props.getAllDataAction();
   }
 
@@ -37,40 +58,25 @@ class ConnectionManager extends Component {
     this.ipcRenderer.send('call-home', {connection});
   }
 
-  openConnectionSettings(connection) {
-    this.loadProps(connection);
-    this.setState({
-      visible: true
-    });
-  }
-
-  hideModal() {
+  hide() {
     this.setState({
       visible: false
     });
   }
 
-  loadProps(props) {
-    const obj = {
-      connectionName: {
-        value: ''
-      },
-      host: {
-        value: ''
-      },
-      port: {
-        value: 3306
-      },
-      database: {
-        value: ''
-      },
-      username: {
-        value: ''
-      },
-      password: {
-        value: ''
-      }
-    };
+  openConnectionSettings(con) {
+    this.loadProps(con);
+    const titlePrefix = "Connection Settings";
+    const conName = con && con.connectionName ? con.connectionName : 'New Connection';
+    const modalTitle = `${titlePrefix} - ${conName}`;
+    this.setState({
+      visible: true,
+      modalTitle
+    });
+  }
+
+  loadProps(props = {}) {
+    const obj = this.defaultFormValues;
     for (const key in props) {
       if (props.hasOwnProperty(key) && ConnectionManager.updatableProp(key)) {
         obj[key] = {
@@ -97,12 +103,13 @@ class ConnectionManager extends Component {
     };
   }
 
-  selectMenuItem(key) {
+  selectMenuItem(key, connection) {
     if (key === 'remove') {
       this.removeConnection();
+    } else if (key === 'edit') {
+      this.openConnectionSettings(connection);
     }
   }
-
 
   handleInput(evt) {
     const changes = {};
@@ -122,20 +129,20 @@ class ConnectionManager extends Component {
 
   render() {
     const {connections} = this.props;
-
-    const menu = (
-      <Menu onClick={({key}) => {
-        this.selectMenuItem(key)
-      }}>
-        <Menu.Item key="edit">
-          <a>Edit</a>
-        </Menu.Item>
-        <Menu.Item key="remove">
-          <a>Remove</a>
-        </Menu.Item>
-      </Menu>
-    );
-
+    const menu = (connection) => {
+      return (
+        <Menu onClick={({key}) => {
+          this.selectMenuItem(key, connection)
+        }}>
+          <Menu.Item key="edit">
+            <a>Edit</a>
+          </Menu.Item>
+          <Menu.Item key="remove">
+            <a>Remove</a>
+          </Menu.Item>
+        </Menu>
+      );
+    };
     const columns = [{
       title: 'Connection Name',
       dataIndex: 'connectionName',
@@ -176,11 +183,9 @@ class ConnectionManager extends Component {
       render: (text, record) => (
         <span>
           <Button onClick={() => {
-            this.openConnectionSettings(record)
+            this.connect(record)
           }} style={{width: 70, marginRight: 10, paddingLeft: 5, paddingRight: 5}}>Connect</Button>
-          <Dropdown onClick={() => {
-            this.openConnectionSettings(record)
-          }} overlay={menu} trigger={['click']} placement="bottomCenter">
+          <Dropdown overlay={menu(record)} trigger={['click']} placement="bottomCenter">
             <Button style={{width: 70}}>
               <Icon type="setting"/>
             </Button>
@@ -188,33 +193,25 @@ class ConnectionManager extends Component {
         </span>
       ),
     }];
-    const titlePrefix = "Connection Settings";
-    const conName = this.selectedConnection && this.selectedConnection.connectionName ?
-      this.selectedConnection.connectionName : 'New Connection';
-    const modalTitle = `${titlePrefix} - ${conName}`;
-    const fields = this.state.fields;
     return (
       <div style={{margin: 10, marginTop: 20}}>
         <div style={{marginBottom: 20}}>
-          <Modal
-            title={modalTitle}
+          <Settings
+            {...this.state.fields}
+            title={this.state.modalTitle}
             visible={this.state.visible}
-            onOk={this.handleOk}
-            onCancel={this.handleCancel}
-            footer={[]}
-          >
-            <Settings
-              {...fields}
-              hide={this.hideModal}
-            />
-          </Modal>
+            hide={this.hide}
+          />
           <Button onClick={() => {
             this.openConnectionSettings()
           }} style={{backgroundColor: 'green', width: '150px', color: 'white'}}>
             Create Connection
           </Button>
         </div>
-        <Table scroll={{y: 300}} pagination={false} dataSource={ConnectionManager.handleConnections(connections)} columns={columns}
+        <Table scroll={{y: 300}}
+               pagination={false}
+               dataSource={ConnectionManager.handleConnections(connections)}
+               columns={columns}
                size="middle"/>
       </div>
     )
