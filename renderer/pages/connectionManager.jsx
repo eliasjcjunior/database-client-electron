@@ -21,8 +21,7 @@ class ConnectionManager extends Component {
     this.removeConnection = this.removeConnection.bind(this);
     this.connect = this.connect.bind(this);
     this.openConnectionSettings = this.openConnectionSettings.bind(this);
-    this.handleOk = this.handleOk.bind(this);
-    this.handleCancel = this.handleCancel.bind(this);
+    this.hideModal = this.hideModal.bind(this);
     this.props.getAllDataAction();
   }
 
@@ -45,20 +44,33 @@ class ConnectionManager extends Component {
     });
   }
 
-  handleOk() {
-    this.setState({
-      visible: false
-    });
-  }
-
-  handleCancel() {
+  hideModal() {
     this.setState({
       visible: false
     });
   }
 
   loadProps(props) {
-    const obj = {};
+    const obj = {
+      connectionName: {
+        value: ''
+      },
+      host: {
+        value: ''
+      },
+      port: {
+        value: 3306
+      },
+      database: {
+        value: ''
+      },
+      username: {
+        value: ''
+      },
+      password: {
+        value: ''
+      }
+    };
     for (const key in props) {
       if (props.hasOwnProperty(key) && ConnectionManager.updatableProp(key)) {
         obj[key] = {
@@ -189,8 +201,12 @@ class ConnectionManager extends Component {
             visible={this.state.visible}
             onOk={this.handleOk}
             onCancel={this.handleCancel}
+            footer={[]}
           >
-            <Settings {...fields} con={this.selectedConnection}/>
+            <Settings
+              {...fields}
+              hide={this.hideModal}
+            />
           </Modal>
           <Button onClick={() => {
             this.openConnectionSettings()

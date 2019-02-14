@@ -44,16 +44,18 @@ class Settings extends Component {
     this.setState(changes);
   };
 
-  handleReset = () => {
+  handleReset = (callback) => {
     this.props.form.resetFields();
+    callback();
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e, callback) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         this.props.saveDataAction(values);
         this.props.getAllDataAction();
+        callback();
       }
     });
   };
@@ -67,7 +69,7 @@ class Settings extends Component {
     const {getFieldDecorator} = this.props.form;
     return (
       <div style={{margin: 10}}>
-        <Form onSubmit={e => this.handleSubmit(e)}>
+        <Form onSubmit={e => this.handleSubmit(e, this.props.hide)}>
           <Tabs defaultActiveKey="1">
             <TabPane tab="Connection" key="1">
               <Form.Item
@@ -187,7 +189,7 @@ class Settings extends Component {
                     <Button type="primary" htmlType="submit">
                       Save
                     </Button>
-                    <Button style={{marginLeft: 8}} onClick={this.handleReset}>
+                    <Button style={{marginLeft: 8}} onClick={() => {this.handleReset(this.props.hide)}}>
                       Cancel
                     </Button>
                   </Col>
