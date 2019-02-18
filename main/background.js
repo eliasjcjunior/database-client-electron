@@ -34,7 +34,6 @@ app.on('ready', () => {
     maximizable: false,
     show: false
   });
-  modalScreen.hide();
   modalScreen.webContents.on('close', () => {
     modalScreen.hide();
   });

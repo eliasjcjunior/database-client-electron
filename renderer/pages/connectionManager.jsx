@@ -48,11 +48,6 @@ class ConnectionManager extends Component {
     this.props.getAllDataAction();
   }
 
-  static updatableProp(property) {
-    const whitelist = ['connectionName', 'database', 'host', 'port', 'password', 'username', '_id'];
-    return whitelist.indexOf(property) >= 0;
-  }
-
   updateConnection() {
   }
 
@@ -66,7 +61,7 @@ class ConnectionManager extends Component {
     });
   }
 
-  openConnectionSettings(con, toBeUpdate = false) {
+  openConnectionSettings(con = {}, toBeUpdate = false) {
     this.loadProps(con, toBeUpdate);
     const titlePrefix = "Connection Settings";
     const conName = con && con.connectionName ? con.connectionName : 'New Connection';
@@ -79,12 +74,11 @@ class ConnectionManager extends Component {
 
   loadProps(props = {}, toBeUpdate = false) {
     const obj = this.defaultFormValues;
-    for (const key in props) {
-      if (props.hasOwnProperty(key) && ConnectionManager.updatableProp(key)) {
-        obj[key] = {
-          value: props[key]
-        };
-      }
+    const whitelist = ['connectionName', 'database', 'host', 'port', 'password', 'username', '_id'];
+    for (const key of whitelist) {
+      obj[key] = {
+        value: props.hasOwnProperty(key) ? props[key] : ''
+      };
     }
     this.setState({fields: {...obj}, toBeUpdate, _id: obj._id});
   };
