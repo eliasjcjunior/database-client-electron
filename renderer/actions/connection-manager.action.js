@@ -2,6 +2,9 @@ import db from '../services/database';
 import { ipcRenderer } from 'electron';
 
 export const connectionManagerActionTypes = {
+    UPDATE_CONNECTION_MANAGER_START: 'UPDATE_CONNECTION_MANAGER_START',
+    UPDATE_CONNECTION_MANAGER_SUCCESS: 'UPDATE_CONNECTION_MANAGER_SUCCESS',
+    UPDATE_CONNECTION_MANAGER_FAIL: 'UPDATE_CONNECTION_MANAGER_FAIL',
     SAVE_CONNECTION_MANAGER_START: 'SAVE_CONNECTION_MANAGER_START',
     SAVE_CONNECTION_MANAGER_SUCCESS: 'SAVE_CONNECTION_MANAGER_SUCCESS',
     SAVE_CONNECTION_MANAGER_FAIL: 'SAVE_CONNECTION_MANAGER_FAIL',
@@ -11,6 +14,17 @@ export const connectionManagerActionTypes = {
     REMOVE_CONNECTION_MANAGER_START: 'REMOVE_CONNECTION_MANAGER_START',
     REMOVE_CONNECTION_MANAGER_SUCCESS: 'REMOVE_CONNECTION_MANAGER_SUCCESS',
     REMOVE_CONNECTION_MANAGER_FAIL: 'REMOVE_CONNECTION_MANAGER_FAIL'
+}
+
+export const updateDataAction = (value) => {
+    return dispatch => {
+        dispatch({ type: connectionManagerActionTypes.UPDATE_CONNECTION_MANAGER_START });
+        return db.connections.update({_id: value._id}, value, {returnUpdatedDocs: true}).then(database => {
+            dispatch({ type: connectionManagerActionTypes.UPDATE_CONNECTION_MANAGER_SUCCESS, data: { database }});
+        }).catch(error => {
+            dispatch({ type: connectionManagerActionTypes.UPDATE_CONNECTION_MANAGER_FAIL, error });
+        });
+    };
 }
 
 export const saveDataAction = (value) => {
