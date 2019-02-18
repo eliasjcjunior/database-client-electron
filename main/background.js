@@ -4,8 +4,7 @@ import { enableHotReload } from './helpers'
 
 const isProd = process.env.NODE_ENV === 'production';
 
-global.modalScreen = null;
-global.homeScreen = null;
+let mainScreen = null;
 
 const host = 'http://localhost:8888';
 const uri = {
@@ -21,65 +20,43 @@ if (!isProd) {
 }
 
 app.on('ready', () => {
-  modalScreen = new BrowserWindow({
+  mainScreen = new BrowserWindow({
     width: 800,
     height: 800,
     resizable: false,
     maximizable: false
   });
-  homeScreen = new BrowserWindow({
-    width: 1200,
-    height: 1000,
-    resizable: false,
-    maximizable: false,
-    show: false
-  });
-  modalScreen.webContents.on('close', () => {
-    modalScreen.hide();
-  });
-  homeScreen.hide();
-
-  homeScreen.webContents.on('close', () => {
+  mainScreen.webContents.on('close', () => {
     app.quit();
   });
 
-  if (isProd) {
-    const homeFile = join(app.getAppPath(), 'app/home/index.html');
-    const modalFile = join(app.getAppPath(), 'app/connection-manager/index.html');
-    homeScreen.loadFile(homeFile);
-    modalScreen.loadFile(modalFile);
-  } else {
-    modalScreen.loadURL(`${host}${uri.connectionManager}`);
-    modalScreen.webContents.on('did-finish-load', () => {
-      // Home
-      homeScreen.loadURL(`${host}${uri.home}`);
-      homeScreen.webContents.on('close', () => {
-        app.quit();
-      });
-    });
-  }
+  loadConnectionManager();
 });
 
-ipcMain.on('call-new-connection', (event, args) => {
-  homeScreen.center();
-  homeScreen.show();
-  homeScreen.webContents.send('message', args);
-  modalScreen.hide();
+ipcMain.on('call-home', () => {
+  loadHome();
 });
 
-ipcMain.on('call-connection-manager', (event, args) => {
-  if (isProd) {
-    const modalFile = join(app.getAppPath(), 'app/connection-manager/index.html');
-    modalScreen.loadFile(modalFile);
-  } else {
-    modalScreen.loadURL(`${host}${uri.connectionManager}`);
-  }
-  modalScreen.webContents.on('did-finish-load', () => {
-    modalScreen.center();
-    modalScreen.show();
-    modalScreen.webContents.send('message', args);
-  });
+ipcMain.on('call-connection-manager', () => {
+  loadConnectionManager();
 });
+
+const loadConnectionManager = () => {
+  navigateTo('app/connection-manager/index.html', uri.connectionManager);
+};
+
+const loadHome = () => {
+  navigateTo('app/home/index.html', uri.home);
+};
+
+const navigateTo = (route, routeOnDev = uri.home) => {
+  if (isProd) {
+    const fileAddress = join(app.getAppPath(), route);
+    mainScreen.loadFile(fileAddress);
+  } else {
+    mainScreen.loadURL(`${host}${routeOnDev}`);
+  }
+};
 
 app.on('window-all-closed', () => {
   app.quit()
