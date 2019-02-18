@@ -32,7 +32,9 @@ class ConnectionManager extends Component {
     connection: null,
     visible: false,
     modalTitle: '',
-    fields: {...this.defaultFormValues}
+    fields: {...this.defaultFormValues},
+    toBeUpdate: false,
+    _id: ''
   };
 
   constructor(props) {
@@ -47,7 +49,7 @@ class ConnectionManager extends Component {
   }
 
   static updatableProp(property) {
-    const whitelist = ['connectionName', 'database', 'host', 'port', 'password', 'username'];
+    const whitelist = ['connectionName', 'database', 'host', 'port', 'password', 'username', '_id'];
     return whitelist.indexOf(property) >= 0;
   }
 
@@ -64,8 +66,8 @@ class ConnectionManager extends Component {
     });
   }
 
-  openConnectionSettings(con) {
-    this.loadProps(con);
+  openConnectionSettings(con, toBeUpdate = false) {
+    this.loadProps(con, toBeUpdate);
     const titlePrefix = "Connection Settings";
     const conName = con && con.connectionName ? con.connectionName : 'New Connection';
     const modalTitle = `${titlePrefix} - ${conName}`;
@@ -75,7 +77,7 @@ class ConnectionManager extends Component {
     });
   }
 
-  loadProps(props = {}) {
+  loadProps(props = {}, toBeUpdate = false) {
     const obj = this.defaultFormValues;
     for (const key in props) {
       if (props.hasOwnProperty(key) && ConnectionManager.updatableProp(key)) {
@@ -84,11 +86,11 @@ class ConnectionManager extends Component {
         };
       }
     }
-    this.setState({fields: {...obj}});
+    this.setState({fields: {...obj}, toBeUpdate, _id: obj._id});
   };
 
-  removeConnection() {
-    const {removeDataAction, connection, getAllDataAction} = this.props;
+  removeConnection(connection) {
+    const {removeDataAction, getAllDataAction} = this.props;
     removeDataAction(connection._id);
     getAllDataAction();
   }
@@ -105,9 +107,9 @@ class ConnectionManager extends Component {
 
   selectMenuItem(key, connection) {
     if (key === 'remove') {
-      this.removeConnection();
+      this.removeConnection(connection);
     } else if (key === 'edit') {
-      this.openConnectionSettings(connection);
+      this.openConnectionSettings(connection, true);
     }
   }
 
@@ -201,6 +203,8 @@ class ConnectionManager extends Component {
             title={this.state.modalTitle}
             visible={this.state.visible}
             hide={this.hide}
+            toBeUpdated={this.state.toBeUpdate}
+            _id={this.state._id}
           />
           <Button onClick={() => {
             this.openConnectionSettings()
@@ -208,7 +212,7 @@ class ConnectionManager extends Component {
             Create Connection
           </Button>
         </div>
-        <Table scroll={{y: 300}}
+        <Table scroll={{y: 700}}
                pagination={false}
                dataSource={ConnectionManager.handleConnections(connections)}
                columns={columns}
