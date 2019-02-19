@@ -198,27 +198,27 @@ const WrappedClass = Form.create({
     return {
       connectionName: Form.createFormField({
         ...props.connectionName,
-        value: props.connectionName.value
+        value: props && props.connectionName && props.connectionName.value ? props.connectionName.value : ''
       }),
       host: Form.createFormField({
         ...props.host,
-        value: props.host.value
+        value: props && props.host && props.host.value ? props.host.value : ''
       }),
       port: Form.createFormField({
         ...props.port,
-        value: props.port.value
+        value: props && props.port && props.port.value ? props.port.value : ''
       }),
       database: Form.createFormField({
         ...props.database,
-        value: props.database.value
+        value: props && props.database && props.database.value ? props.database.value : ''
       }),
       username: Form.createFormField({
         ...props.username,
-        value: props.username.value
+        value: props && props.username && props.username.value ? props.username.value : ''
       }),
       password: Form.createFormField({
         ...props.password,
-        value: props.password.value
+        value: props && props.password && props.password.value ? props.password.value : ''
       })
     };
   }
